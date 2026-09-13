@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.visit.domain.model.Profile
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -17,7 +18,9 @@ import javax.inject.Singleton
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore("Profile")
 
 @Singleton
-class ProfileDataStore @Inject constructor(private val context: Context) {
+class ProfileDataStore @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     val profileKey = stringPreferencesKey("profile")
 
     fun observeProfile(): Flow<Profile?> {

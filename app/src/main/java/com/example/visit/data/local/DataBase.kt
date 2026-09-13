@@ -11,7 +11,7 @@ import com.example.visit.data.local.entity.ScannedContactEntity
 import kotlin.jvm.java
 
 @TypeConverters(Converters:: class)
-@Database(entities = [(ScannedContactEntity::class)], version = 1)
+@Database(entities = [(ScannedContactEntity::class)], version = 2, exportSchema = false)
 abstract class ContactDataBase: RoomDatabase() {
     abstract fun contactDao(): ContactDao
 }

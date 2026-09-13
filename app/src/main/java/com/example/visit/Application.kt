@@ -1,4 +1,8 @@
 package com.example.visit
 
-class Application {
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class VisitApp : Application() {
 }

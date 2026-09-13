@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -39,6 +41,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.material.icons.core)
+
+    implementation(libs.androidx.hilt.navigation.compose)
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
