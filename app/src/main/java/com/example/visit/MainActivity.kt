@@ -4,15 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.visit.presentation.ProfileScreen.EditProfileRoute
-import com.example.visit.presentation.ProfileScreen.EditProfileScreen
+import com.example.visit.presentation.scannerScreen.ScannerScreen
 import com.example.visit.ui.theme.VisitTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,11 +15,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VisitTheme {
-                NavigationVisit()
+                ScannerScreen()
             }
         }
     }
 }
-
-
-// TODO создать новую ветку для спринта 2 QR + визитка и внем все делать потом всоосоендить
