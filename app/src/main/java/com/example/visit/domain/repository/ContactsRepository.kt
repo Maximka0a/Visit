@@ -8,4 +8,5 @@ interface ContactsRepository {
     suspend fun saveContact(contact: ScannedContact)
     suspend fun updateNote(id: Long, note: String)
     suspend fun deleteContact(id: Long)
+    suspend fun updateContact(contact: ScannedContact)
 }

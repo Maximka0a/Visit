@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VisitTheme {
-                ScannerScreen()
+                NavigationVisit()
             }
         }
     }

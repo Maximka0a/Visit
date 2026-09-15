@@ -15,6 +15,10 @@ class ContactsRepositoryImpl @Inject constructor(private val contactDao: Contact
         }
     }
 
+    override suspend fun updateContact(contact: ScannedContact) {
+        contactDao.updateContact(contact.toEntity())
+    }
+
     override suspend fun saveContact(contact: ScannedContact) {
         contactDao.saveContact(contact.toEntity())
     }

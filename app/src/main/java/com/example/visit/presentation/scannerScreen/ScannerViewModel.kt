@@ -7,6 +7,7 @@ import com.example.visit.domain.model.ScannedContact
 import com.example.visit.domain.repository.ContactsRepository
 import com.example.visit.domain.repository.ProfileRepository
 import com.example.visit.domain.usecase.FindCommonTagsUseCase
+import com.example.visit.domain.usecase.FindDuplicateContactUseCase
 import com.example.visit.domain.usecase.ParseQrUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,8 @@ class ScannerViewModel @Inject constructor(
     private val parseQrUseCase: ParseQrUseCase,
     private val  profileRepository: ProfileRepository,
     private val  findCommonTagsUseCase: FindCommonTagsUseCase,
-    private val  contactsRepository: ContactsRepository
+    private val  contactsRepository: ContactsRepository,
+    private val  findDuplicateContactUseCase: FindDuplicateContactUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ScannerUiState())
     val uiState: StateFlow<ScannerUiState> = _uiState.asStateFlow()
@@ -35,15 +37,26 @@ class ScannerViewModel @Inject constructor(
     fun onSaveContactClicked() {
         val scannedProfile = _uiState.value.scannedProfile ?: return
 
-        val scannedContact = ScannedContact(
-            id = 0,
-            profile = scannedProfile,
-            scannedAt = System.currentTimeMillis(),
-            note = null
-        )
-
         viewModelScope.launch {
-            contactsRepository.saveContact(scannedContact)
+            val existingContacts = contactsRepository.observeContact().first()
+            val duplicate = findDuplicateContactUseCase.invoke(scannedProfile, existingContacts)
+
+            if (duplicate != null) {
+                val updatedContact = duplicate.copy(
+                    profile = scannedProfile,
+                    scannedAt = System.currentTimeMillis()
+                )
+                contactsRepository.updateContact(updatedContact)
+            } else {
+                val newContact = ScannedContact(
+                    id = 0,
+                    profile = scannedProfile,
+                    scannedAt = System.currentTimeMillis(),
+                    note = null
+                )
+                contactsRepository.saveContact(newContact)
+            }
+
             _uiState.value = ScannerUiState()
         }
     }

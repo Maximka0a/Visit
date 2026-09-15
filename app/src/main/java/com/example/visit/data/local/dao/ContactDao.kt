@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ContactDao {
 
+    @Update
+    suspend fun updateContact(contact: ScannedContactEntity)
+
     @Query("SELECT * FROM scanned_contacts")
     fun observeContact(): Flow<List<ScannedContactEntity>>
 
