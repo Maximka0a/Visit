@@ -39,7 +39,7 @@ class ScannerViewModel @Inject constructor(
 
         viewModelScope.launch {
             val existingContacts = contactsRepository.observeContact().first()
-            val duplicate = findDuplicateContactUseCase.invoke(scannedProfile, existingContacts)
+            val duplicate = findDuplicateContactUseCase(scannedProfile, existingContacts)
 
             if (duplicate != null) {
                 val updatedContact = duplicate.copy(
@@ -65,7 +65,10 @@ class ScannerViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(scannedProfile = null)
     }
     fun onQrCodeScanned(rawText: String) {
-        val result = parseQrUseCase.invoke(rawText)
+        // Пока уже показан один отсканированный профиль, новые кадры камеры игнорируем
+        if (_uiState.value.scannedProfile != null) return
+
+        val result = parseQrUseCase(rawText)
 
         result
             .onSuccess { profile ->
@@ -73,7 +76,7 @@ class ScannerViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     _uiState.value = _uiState.value.copy(
-                        commonTags =                 findCommonTagsUseCase.invoke(
+                        commonTags = findCommonTagsUseCase(
                             profileRepository.observeProfile().first()?.tags ?: emptyList(),
                             otherTags = profile.tags,
                         )

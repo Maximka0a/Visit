@@ -1,4 +1,4 @@
-package com.example.visit.presentation.ProfileScreen
+package com.example.visit.presentation.editProfileScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -57,8 +57,13 @@ class ProfileViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(themeId = newTheme)
     }
     fun onTagAdded(tag: String) {
+        val trimmedTag = tag.trim()
+        if (trimmedTag.isBlank()) return
+        if (_uiState.value.tags.size >= 3) return
+        if (_uiState.value.tags.contains(trimmedTag)) return
+
         _uiState.value = _uiState.value.copy(
-            tags = _uiState.value.tags + tag
+            tags = _uiState.value.tags + trimmedTag
         )
     }
     fun onTagRemove(tag: String) {
@@ -67,8 +72,12 @@ class ProfileViewModel @Inject constructor(
         )
     }
     fun onSocialLinkAdded(social: String, link: String){
+        val trimmedSocial = social.trim()
+        val trimmedLink = link.trim()
+        if (trimmedSocial.isBlank() || trimmedLink.isBlank()) return
+
         _uiState.value = _uiState.value.copy(
-            socialLinks = _uiState.value.socialLinks.plus(social to link)
+            socialLinks = _uiState.value.socialLinks.plus(trimmedSocial to trimmedLink)
         )
     }
     fun onSocialLinkRemoved(social: String){

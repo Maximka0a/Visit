@@ -1,10 +1,13 @@
 package com.example.visit
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,33 +15,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavHost
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.visit.presentation.ProfileScreen.EditProfileRoute
-import com.example.visit.presentation.ProfileScreen.EditProfileScreen
-import com.example.visit.presentation.contactsScreen.ContactsScreen
 import com.example.visit.presentation.contactsScreen.RouteContactsScreen
+import com.example.visit.presentation.editProfileScreen.EditProfileRoute
 import com.example.visit.presentation.myCardScreen.MyCardRoute
-import com.example.visit.presentation.navitationScreen.NavigationViewModel
+import com.example.visit.presentation.navigationScreen.NavigationViewModel
 import com.example.visit.presentation.scannerScreen.ScannerScreen
 import kotlinx.serialization.Serializable
 
-sealed interface ProfileScreen {
+sealed interface AppRoute {
     @Serializable
-    data object MyProfile : ProfileScreen
+    data object MyProfile : AppRoute
     @Serializable
-    data object EditProfile : ProfileScreen
+    data object EditProfile : AppRoute
     @Serializable
-    data object Scanner : ProfileScreen
+    data object Scanner : AppRoute
     @Serializable
-    data object Contacts:  ProfileScreen
+    data object Contacts:  AppRoute
 }
 
 @Composable
@@ -48,7 +49,9 @@ fun NavigationVisit(
     val navUiState by navigationViewModel.uiState.collectAsStateWithLifecycle()
 
     if (navUiState.isLoading) {
-        // простой загрузочный экран, например Box с CircularProgressIndicator по центру
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
         return
     }
     val navController = rememberNavController()
@@ -56,7 +59,7 @@ fun NavigationVisit(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val showBottomBar = currentDestination?.hasRoute<ProfileScreen.EditProfile>() != true
+    val showBottomBar = currentDestination?.hasRoute<AppRoute.EditProfile>() != true
 
     Scaffold(
         bottomBar = {
@@ -65,20 +68,20 @@ fun NavigationVisit(
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.Face, contentDescription = "Моя визитка") },
                         label = { Text("Моя визитка") },
-                        selected = currentDestination?.hasRoute<ProfileScreen.MyProfile>() == true,
-                        onClick = { navController.navigate(ProfileScreen.MyProfile) }
+                        selected = currentDestination?.hasRoute<AppRoute.MyProfile>() == true,
+                        onClick = { navController.navigate(AppRoute.MyProfile) }
                     )
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.Search, contentDescription = "Сканировать") },
                         label = { Text("Сканировать") },
-                        selected = currentDestination?.hasRoute<ProfileScreen.Scanner>() == true,
-                        onClick = { navController.navigate(ProfileScreen.Scanner) }
+                        selected = currentDestination?.hasRoute<AppRoute.Scanner>() == true,
+                        onClick = { navController.navigate(AppRoute.Scanner) }
                     )
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.Person, contentDescription = "Знакомства") },
                         label = { Text("Знакомства") },
-                        selected = currentDestination?.hasRoute<ProfileScreen.Contacts>() == true,
-                        onClick = { navController.navigate(ProfileScreen.Contacts) }
+                        selected = currentDestination?.hasRoute<AppRoute.Contacts>() == true,
+                        onClick = { navController.navigate(AppRoute.Contacts) }
                     )
                 }
             }
@@ -86,23 +89,23 @@ fun NavigationVisit(
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = if (navUiState.hasProfile) ProfileScreen.MyProfile else ProfileScreen.EditProfile,
+            startDestination = if (navUiState.hasProfile) AppRoute.MyProfile else AppRoute.EditProfile,
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable<ProfileScreen.EditProfile>{
+            composable<AppRoute.EditProfile>{
                 EditProfileRoute(
-                    onNavigateToCard = {navController.navigate(ProfileScreen.MyProfile)}
+                    onNavigateToCard = {navController.navigate(AppRoute.MyProfile)}
                 )
             }
-            composable<ProfileScreen.MyProfile>{
+            composable<AppRoute.MyProfile>{
                 MyCardRoute(
-                    onNavitateToEdit = {navController.navigate(ProfileScreen.EditProfile)}
+                    onNavigateToEdit = {navController.navigate(AppRoute.EditProfile)}
                 )
             }
-            composable<ProfileScreen.Scanner>{
+            composable<AppRoute.Scanner>{
                 ScannerScreen()
             }
-            composable<ProfileScreen.Contacts>{
+            composable<AppRoute.Contacts>{
                 RouteContactsScreen()
             }
         }

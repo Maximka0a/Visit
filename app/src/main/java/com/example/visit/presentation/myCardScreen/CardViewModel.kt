@@ -34,9 +34,17 @@ class CardViewModel @Inject constructor(
         viewModelScope.launch {
             profileRepository.observeProfile().collect { profile ->
                 if (profile != null){
-                    _uiState.value = MyCardUiState(
+                    val previousProfile = _uiState.value.profile
+                    // Смена темы карточки не меняет содержимое QR — не перегенерируем его зря
+                    val qrRelevantFieldsChanged = previousProfile == null ||
+                        previousProfile.name != profile.name ||
+                        previousProfile.title != profile.title ||
+                        previousProfile.tags != profile.tags ||
+                        previousProfile.socialLinks != profile.socialLinks
+
+                    _uiState.value = _uiState.value.copy(
                         profile = profile,
-                        qrBitmap = useCase.invoke(profile)
+                        qrBitmap = if (qrRelevantFieldsChanged) useCase(profile) else _uiState.value.qrBitmap
                     )
                 }
             }

@@ -13,6 +13,10 @@ class Converters {
     }
     @TypeConverter
     fun JsonToProfile(json: String): Profile{
-        return Json.decodeFromString(json)
+
+        return runCatching { Json.decodeFromString<Profile>(json) }
+            .getOrElse {
+                Profile(name = "", title = null, tags = emptyList(), socialLinks = emptyMap(), themeId = 0)
+            }
     }
 }

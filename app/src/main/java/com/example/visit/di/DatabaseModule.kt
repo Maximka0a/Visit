@@ -22,7 +22,7 @@ object DatabaseModule {
             klass = ContactDataBase::class.java,
             name = "ContactDataBase"
         )
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
 

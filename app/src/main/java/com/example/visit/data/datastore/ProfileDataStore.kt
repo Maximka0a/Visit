@@ -26,8 +26,9 @@ class ProfileDataStore @Inject constructor(
     fun observeProfile(): Flow<Profile?> {
         val result: Flow<Profile?> = context.dataStore.data.map {
             preferences ->
-            if (preferences[profileKey] !== null){
-                Json.decodeFromString<Profile>(preferences[profileKey].toString())
+            val json = preferences[profileKey]
+            if (json != null){
+                runCatching { Json.decodeFromString<Profile>(json) }.getOrNull()
             }else{
                 null
             }

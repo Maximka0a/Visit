@@ -57,7 +57,7 @@ object CardThemes {
 }
 @Composable
 fun MyCardRoute(
-    onNavitateToEdit: () -> Unit,
+    onNavigateToEdit: () -> Unit,
     viewModel: CardViewModel = hiltViewModel()
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -66,7 +66,7 @@ fun MyCardRoute(
         uiState,
         onQrIconClicked = viewModel::onQrIconClicked,
         onQrSheetDismissed = viewModel::onQrSheetDismissed,
-        onNavitateToEdit = onNavitateToEdit,
+        onNavigateToEdit = onNavigateToEdit,
         onThemeChange = viewModel::onThemeChange
     )
 }
@@ -77,7 +77,7 @@ fun MyCardScreen(
     uiState: MyCardUiState,
     onQrIconClicked: () -> Unit,
     onQrSheetDismissed: () -> Unit,
-    onNavitateToEdit:() -> Unit,
+    onNavigateToEdit:() -> Unit,
     onThemeChange:(Int) -> Unit
 ) {
     if (uiState.profile == null){
@@ -86,7 +86,7 @@ fun MyCardScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            BuisessCardCanvas(
+            BusinessCardCanvas(
                 name = uiState.profile.name,
                 title = uiState.profile.title?: "",
                 tags = uiState.profile.tags,
@@ -117,7 +117,7 @@ fun MyCardScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    onNavitateToEdit()
+                    onNavigateToEdit()
                 }
             ) {
                 Text("Редактировать ")
@@ -138,7 +138,7 @@ fun MyCardScreen(
 }
 
 @Composable
-fun BuisessCardCanvas(
+fun BusinessCardCanvas(
     name: String,
     title: String,
     tags: List<String>,

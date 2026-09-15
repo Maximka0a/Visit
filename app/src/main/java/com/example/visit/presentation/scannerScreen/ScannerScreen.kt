@@ -1,8 +1,9 @@
 package com.example.visit.presentation.scannerScreen
 
 import android.Manifest
-import android.content.Context
-import android.util.Log
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +25,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -53,10 +59,14 @@ fun ScannerScreen(
     vm: ScannerViewModel = hiltViewModel()
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     val cameraPermissionState = rememberPermissionState(
         permission = Manifest.permission.CAMERA
     )
+    // Запоминаем, что уже пытались запросить разрешение — так отличаем
+    // "ещё не спрашивали" от "запретили навсегда"
+    var permissionRequested by rememberSaveable { mutableStateOf(false) }
 
     when {
         cameraPermissionState.status.isGranted -> {
@@ -77,13 +87,30 @@ fun ScannerScreen(
         }
         cameraPermissionState.status.shouldShowRationale -> {
             Text("Камера нужна для сканирования QR-кодов")
-            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+            Button(onClick = {
+                permissionRequested = true
+                cameraPermissionState.launchPermissionRequest()
+            }) {
                 Text("Разрешить")
+            }
+        }
+        permissionRequested -> {
+            Text("Доступ к камере запрещён. Разрешите его в настройках приложения")
+            Button(onClick = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
+            }) {
+                Text("Открыть настройки")
             }
         }
         else -> {
             Text("Нужен доступ к камере")
-            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+            Button(onClick = {
+                permissionRequested = true
+                cameraPermissionState.launchPermissionRequest()
+            }) {
                 Text("Запросить доступ")
             }
         }
@@ -123,8 +150,9 @@ fun  ScannedProfileBottomSheet(
                     Spacer(modifier = Modifier.width(6.dp))
                 }
             }
-        Button(onSaveClicked) { }
-        Text("Сохранить в  контакты")
+        Button(onClick = onSaveClicked, modifier = Modifier.fillMaxWidth()) {
+            Text("Сохранить в контакты")
+        }
         }
     }
 
@@ -133,43 +161,56 @@ fun  ScannedProfileBottomSheet(
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @Composable
 fun CameraPreview(onQrCodeScanned: (String) -> Unit) {
+    val context = LocalContext.current
     val barcodeScanner = remember { BarcodeScanning.getClient() }
 
+    // Настраиваем анализатор один раз при создании ImageAnalysis,
+    // а не при каждой рекомпозиции экрана
     val imageAnalysis = remember {
-        ImageAnalysis.Builder().build()
-    }
-    val context = LocalContext.current
-    imageAnalysis.setAnalyzer(
-        ContextCompat.getMainExecutor(context)
-    ) { imageProxy ->
-        val mediaImage = imageProxy.image
-        if (mediaImage != null) {
-            val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            barcodeScanner.process(inputImage)
-                .addOnSuccessListener { barcodes ->
-                    val qrText = barcodes.firstOrNull()?.rawValue
-                    if (qrText != null) {
-                        onQrCodeScanned(qrText)
-                    }
-                }
-                .addOnCompleteListener {
+        ImageAnalysis.Builder().build().also { analysis ->
+            analysis.setAnalyzer(
+                ContextCompat.getMainExecutor(context)
+            ) { imageProxy ->
+                val mediaImage = imageProxy.image
+                if (mediaImage != null) {
+                    val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                    barcodeScanner.process(inputImage)
+                        .addOnSuccessListener { barcodes ->
+                            val qrText = barcodes.firstOrNull()?.rawValue
+                            if (qrText != null) {
+                                onQrCodeScanned(qrText)
+                            }
+                        }
+                        .addOnCompleteListener {
+                            imageProxy.close()
+                        }
+                } else {
                     imageProxy.close()
                 }
-        } else {
-        imageProxy.close()
+            }
+        }
     }
-    }
-
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
+    var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
 
     LaunchedEffect(Unit) {
-        val cameraProvider = ProcessCameraProvider.getInstance(context).await()
+        val provider = ProcessCameraProvider.getInstance(context).await()
+        cameraProvider = provider
         val preview = Preview.Builder().build()
         preview.surfaceProvider = previewView.surfaceProvider
-        cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview,  imageAnalysis)
+        provider.unbindAll()
+        provider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageAnalysis)
+    }
+
+    // При уходе с экрана сканера отвязываем камеру и закрываем сканер штрихкодов,
+    // чтобы они не продолжали работать в фоне
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraProvider?.unbindAll()
+            barcodeScanner.close()
+        }
     }
 
     AndroidView(

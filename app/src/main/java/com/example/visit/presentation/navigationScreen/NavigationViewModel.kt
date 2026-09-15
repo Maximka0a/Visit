@@ -1,4 +1,4 @@
-package com.example.visit.presentation.navitationScreen
+package com.example.visit.presentation.navigationScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

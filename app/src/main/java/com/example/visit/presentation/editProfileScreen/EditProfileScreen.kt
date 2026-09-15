@@ -1,4 +1,4 @@
-package com.example.visit.presentation.ProfileScreen
+package com.example.visit.presentation.editProfileScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,7 +91,6 @@ fun EditProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text("Теги (${uiState.tags.size}/3)")
-        // Здесь позже добавим ввод тега + отображение списка с крестиками для onTagRemove
         var tagName by remember { mutableStateOf("") }
         TextField(
             value = tagName,
@@ -188,8 +187,6 @@ fun EditProfileScreen(
                 }
             }
         }
-
-        // Здесь позже добавим ввод соцсетей + отображение с крестиками для onSocialLinkRemoved
 
         Spacer(modifier = Modifier.height(24.dp))
 
