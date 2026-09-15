@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.androidx.concurrent.futures)
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.accompanist.permissions)
 

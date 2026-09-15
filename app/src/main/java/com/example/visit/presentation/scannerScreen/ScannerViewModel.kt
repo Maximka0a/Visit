@@ -65,7 +65,7 @@ class ScannerViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(scannedProfile = null)
     }
     fun onQrCodeScanned(rawText: String) {
-        // Пока уже показан один отсканированный профиль, новые кадры камеры игнорируем
+
         if (_uiState.value.scannedProfile != null) return
 
         val result = parseQrUseCase(rawText)

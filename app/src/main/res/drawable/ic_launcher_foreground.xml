@@ -1,30 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
-                android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <!-- Уголки видоискателя -->
     <path
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+        android:fillColor="#00000000"
+        android:strokeColor="#FFF1DC"
+        android:strokeWidth="42"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M245 345V270Q245 235 280 235H355 M669 235H744Q779 235 779 270V345 M245 679V754Q245 789 280 789H355 M669 789H744Q779 789 779 754V679" />
+    <!-- Буква Q -->
+    <path
+        android:fillColor="#FFF1DC"
+        android:fillType="evenOdd"
+        android:pathData="M300 500C300 408 367 350 454 350C541 350 608 408 608 500C608 592 541 650 454 650C367 650 300 592 300 500ZM375 500C375 552 408 585 454 585C500 585 533 552 533 500C533 448 500 415 454 415C408 415 375 448 375 500Z" />
+    <path
+        android:fillColor="#FFF1DC"
+        android:pathData="M470 545L548 635H620L520 515Z" />
+    <!-- Буква R -->
+    <path
+        android:fillColor="#FFF1DC"
+        android:fillType="evenOdd"
+        android:pathData="M600 370H735C810 370 851 408 851 468C851 513 827 545 789 558L864 650H780L720 570H674V650H600V370ZM674 430V510H723C757 510 776 495 776 470C776 445 757 430 723 430Z" />
+    <!-- QR-модули -->
+    <path
+        android:fillColor="#F2A22D"
+        android:pathData="M437,690 H477 Q490,690 490,703 V743 Q490,756 477,756 H437 Q424,756 424,743 V703 Q424,690 437,690 Z
+                           M513,690 H553 Q566,690 566,703 V743 Q566,756 553,756 H513 Q500,756 500,743 V703 Q500,690 513,690 Z
+                           M437,766 H477 Q490,766 490,779 V819 Q490,832 477,832 H437 Q424,832 424,819 V779 Q424,766 437,766 Z
+                           M513,766 H553 Q566,766 566,779 V819 Q566,832 553,832 H513 Q500,832 500,819 V779 Q500,766 513,766 Z" />
 </vector>
